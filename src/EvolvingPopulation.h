@@ -1,7 +1,8 @@
+#include "Common.h"
+#include "DiscretizedDFE.h"
 
-
-
-
+namespace dbfe {
+    
     typedef std::shared_ptr<DiscretizedDFE> spDiscreitzedDFE;
 
     class EvolvingPopulation   {

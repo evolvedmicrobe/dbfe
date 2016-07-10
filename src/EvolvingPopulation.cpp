@@ -5,7 +5,7 @@
 namespace dbfe {
 
 
-	inline dvector Element_A_Times_E_ToThe_RT(const dvector& A, const dvector&  r, const double t)
+   inline dvector Element_A_Times_E_ToThe_RT(const dvector& A, const dvector&  r, const double t)
    {
         if (A.size() != r.size())
         { Rpp::stop("Cannot Multiply vectors of Unequal Length"); }
@@ -43,11 +43,11 @@ namespace dbfe {
 	 popRelativeFitnesses(dfe->MidPoints),
 	 MutCounter(dfe)
 	  {	
-	  	    LogrelativePopIncrease = Math.Log(popSize.NF / popSize.N0);
-            InvRelativePopIncrease = popSize.N0 / popSize.NF;
-            PopSizes[0] = popSize.N0;
-            N0 = popSize.N0;
-            NF = popSize.NF;
+          LogrelativePopIncrease = std::log(popSize.NF / popSize.N0);
+          InvRelativePopIncrease = popSize.N0 / popSize.NF;
+          PopSizes[0] = popSize.N0;
+          N0 = popSize.N0;
+          NF = popSize.NF;
 
 	  }
 
