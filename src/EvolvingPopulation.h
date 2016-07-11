@@ -1,9 +1,16 @@
+#ifndef EvolvingPopulation_h
+#define EvolvingPopulation_h
+
 #include "Common.h"
+#include <memory>
+
 #include "DiscretizedDFE.h"
+#include "MutationCounter.h"
+#include "ObservedWell.h"
 
 namespace dbfe {
-    
-    typedef std::shared_ptr<DiscretizedDFE> spDiscreitzedDFE;
+
+    typedef std::shared_ptr<DiscretizedDFE> spDiscretizedDFE;
 
     class EvolvingPopulation   {
     public:
@@ -18,19 +25,13 @@ namespace dbfe {
         MutationCounter MutCounter;
 
         EvolvingPopulation(spDiscretizedDFE dfe, const PopulationSize& popSize);
-        EvolvingPopulation(spDiscretizedDFE dfe, ObservedWell well) :this(dfe,well.PopSize);
-        
+        EvolvingPopulation(spDiscretizedDFE dfe, ObservedWell well) :
+        EvolvingPopulation(dfe, *well.PopSize) {};
+
         void GrowOneCycle();
         void GrowOneCycleLabeled();
-        int SamplePopulation();       
+        int SamplePopulation();
     };
-
-
-    class MutationCounter {
-        public: 
-            int CountOfEachMutation[];
-            MutationCounter(spDiscretizedDFE dfe);
-
-    }
-
 }
+#endif /* EvolvingPopulation_h */
+
