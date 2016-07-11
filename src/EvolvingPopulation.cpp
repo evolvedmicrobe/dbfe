@@ -1,12 +1,12 @@
-#include "Common.h"
-#include "EvolvingPopulation.h"
 #include <numeric>
 
+#include "Common.h"
+#include "EvolvingPopulation.h"
+#include "RMultinomial.h"
 
 namespace dbfe {
 
-
-   inline dvector Element_A_Times_E_ToThe_RT(const dvector& A, const dvector&  r, const double t)
+  inline dvector Element_A_Times_E_ToThe_RT(const dvector& A, const dvector&  r, const double t)
    {
         if (A.size() != r.size())
         { Rcpp::stop("Cannot Multiply vectors of Unequal Length"); }
@@ -18,7 +18,7 @@ namespace dbfe {
         return toR;
     }
 
-    inline dvector ElementSubtract(const dvector& x, const dvector& y) {
+  inline dvector ElementSubtract(const dvector& x, const dvector& y) {
     	dvector toR(x.size());
     	if (x.size() != y.size()) {
     		Rcpp::stop("Tried to subtract unequal size vectors");
@@ -84,8 +84,8 @@ EvolvingPopulation::GrowOneCycle() {
                 //the expected number of each fitness class
                 //TODO: The description in the write-up needs to be updated to account for this.
                 //TODO: Decide later if in the case of very few classes (mean muts =0) we should not do one poisson for all classes and
-                //assign after the fact. Note small poissons are ~3X more expensive than single unifoRm with the MersenneTwister RNG
-                for(int j = i; j < mutRates.size(); j++) {
+                //assign after the fact. Note small poissons are ~3X more expensive than single uniform with the MersenneTwister RNG
+                for(int j = 0; j < mutRates.size(); j++) {
                   // Note population sizes includes the neutral class, while mutRates does not, so we start at the same value
                     //Determine the mean number of mutations
                     double meanMutForClass = mutRates[j] * NFminusN0akaTimeForPoisson[i];
@@ -93,8 +93,8 @@ EvolvingPopulation::GrowOneCycle() {
                     int mutNumber = RPOIS(meanMutForClass);
                     int w = j + 1; // Add one to convert from mutation class to fitness class
                     MutCounter.CountOfEachMutation[w] += mutNumber;
-                    //If higher, add to population
-                    if (mutNumber > 0)
+                    //If higher, mutate and advance
+                    if (w > i && mutNumber > 0)
                     {
                       // Figure out the max value on the time scale for uniform sampling
                       double maxRescaled = std::exp(growthTime * dfe->MidPoints[i]);
@@ -136,6 +136,13 @@ EvolvingPopulation::GrowOneCycle() {
               PopSizes[i] = 0.0;
             }
         }
+}
+
+int EvolvingPopulation::SamplePopulation() {
+  double curPopSize = std::accumulate(PopSizes.begin(), PopSizes.end(), 0.0);
+  dvector freqs(PopSizes.size());
+  std::transform(PopSizes.begin(), PopSizes.end(), freqs.begin(), [curPopSize](const double a) {return a / curPopSize;} );
+  return multinomial(freqs);
 }
 
 }
